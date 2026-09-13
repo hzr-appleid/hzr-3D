@@ -136,3 +136,108 @@
   </script>
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="kmr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wi-Fi Dynamic Radar</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: monospace; }
+    body { background-color: #050811; color: #fff; overflow: hidden; height: 100vh; display: flex; flex-direction: column; position: relative; }
+    
+    #canvas-container { flex: 1; width: 100%; position: relative; z-index: 1; }
+    
+    #camera-preview {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      width: 110px;
+      height: 85px;
+      border: 2px solid #00ffcc;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #000;
+      z-index: 10;
+      box-shadow: 0 0 12px rgba(0, 255, 204, 0.3);
+    }
+    #camera-preview video { width: 100%; height: 100%; object-fit: cover; }
+
+    .bottom-panel { 
+      height: 20vh; 
+      background: #050811; 
+      border-top: 1px solid #10192d; 
+      display: flex; 
+      justify-content: space-around; 
+      align-items: center; 
+      padding: 10px; 
+      z-index: 10; 
+    }
+    .metric { display: flex; flex-direction: column; gap: 6px; text-align: center; }
+    .label { font-size: 12px; color: #5d6e8c; }
+    .value { font-size: 16px; font-weight: bold; color: #3b82f6; }
+  </style>
+</head>
+<body>
+
+  <div id="camera-preview">
+    <video id="webcam" autoplay playsinline muted></video>
+  </div>
+
+  <div id="canvas-container"></div>
+
+  <div class="bottom-panel">
+    <div class="metric">
+      <div class="label">RSSI</div>
+      <div class="value" id="rssi-val">-42 dBm</div>
+    </div>
+    <div class="metric">
+      <div class="label">Variance</div>
+      <div class="value" id="var-val">0.32</div>
+    </div>
+    <div class="metric">
+      <div class="label">Motion</div>
+      <div class="value" id="motion-val">0.025</div>
+    </div>
+    <div class="metric">
+      <div class="label">Persons</div>
+      <div class="value" id="person-val" style="color: #00ffcc;">0</div>
+    </div>
+  </div>
+
+  <script>
+    // Setup Canvas 3D
+    const container = document.getElementById('canvas-container');
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.z = 5;
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight * 0.8);
+    container.appendChild(renderer.domElement);
+
+    // Dynamic Spheres
+    const geometry1 = new THREE.SphereGeometry(1.2, 16, 16);
+    const wireframe1 = new THREE.WireframeGeometry(geometry1);
+    const material1 = new THREE.LineBasicMaterial({ color: 0x00ffcc });
+    const sphere1 = new THREE.LineSegments(wireframe1, material1);
+
+    const geometry2 = new THREE.SphereGeometry(2.2, 16, 16);
+    const wireframe2 = new THREE.WireframeGeometry(geometry2);
+    const material2 = new THREE.LineBasicMaterial({ color: 0x1d4ed8 });
+    const sphere2 = new THREE.LineSegments(wireframe2, material2);
+
+    scene.add(sphere1);
+    scene.add(sphere2);
+
+    let time = 0;
+    function animate() {
+      requestAnimationFrame(animate);
+      time += 0.05;
+
+      sphere1.scale.setScalar(1 + Math.sin(time) * 0.12);
+      sphere2.scale.setScalar(1 + Math.cos(time * 0.8) * 0.08);
+
+      sphere1.rotation.y += 0.01;
+      sphere2.rotation.
