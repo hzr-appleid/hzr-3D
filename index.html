@@ -101,4 +101,46 @@
     });
   </script>
 </body>
-</html>
+</html> <script>
+  // داواکرنا دەستوورا کامێرا پشتی (Back Camera)
+  navigator.mediaDevices.getUserMedia({ 
+    video: { 
+      facingMode: { exact: "environment" } // ئەڤ بڕگە تەنێ کامێرا پشتی ڤەدکەت
+    } 
+  })
+  .then((stream) => {
+    const video = document.createElement('video');
+    video.srcObject = stream;
+    video.setAttribute('playsinline', 'true'); // بۆ هەماهەنگی ل سەر ئایفۆنێ (iOS)
+    video.play();
+
+    // دانانا وێنێ کامێرایێ د پشت شاشێ 3D دا
+    video.style.position = 'fixed';
+    video.style.top = '0';
+    video.style.left = '0';
+    video.style.width = '100vw';
+    video.style.height = '100vh';
+    video.style.objectFit = 'cover';
+    video.style.zIndex = '-1';
+    
+    document.body.appendChild(video);
+  })
+  .catch((err) => {
+    // ئەگەر کامێرا پشتی نەبوو یان ڕێگەیی نەدا، جۆرێ ئاسایی دیار دکەت
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+      .then((stream) => {
+        const video = document.createElement('video');
+        video.srcObject = stream;
+        video.setAttribute('playsinline', 'true');
+        video.play();
+        video.style.position = 'fixed';
+        video.style.top = '0';
+        video.style.left = '0';
+        video.style.width = '100vw';
+        video.style.height = '100vh';
+        video.style.objectFit = 'cover';
+        video.style.zIndex = '-1';
+        document.body.appendChild(video);
+      });
+  });
+</script>
