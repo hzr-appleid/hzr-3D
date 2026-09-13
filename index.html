@@ -195,3 +195,26 @@ socket.onmessage = (event) => {
 };
 
 
+// گرێدانا ڕاستەوخۆ ب سیستەمێ ESP32 یان سێرڤەرێ CSI
+const socket = new WebSocket('ws://192.168.4.1:8765'); // IP یا ئامێرێ وایفایێ
+
+socket.onopen = () => {
+  console.log("گرێدان ب سێنسەرێ وایفایێ هاتە ئەنجامدان");
+};
+
+socket.onmessage = (event) => {
+  const csiData = JSON.parse(event.data);
+  
+  // نیشاندانا ڕێژەیا RSSI و Motion
+  document.getElementById('rssi-val').innerText = csiData.rssi + " dBm";
+  document.getElementById('motion-val').innerText = csiData.motion;
+  
+  // ئەگەر ئاستێ لڤینێ ژ 0.05 زێدەتر بوو، مرۆڤەک دیار بوو
+  if (csiData.motion > 0.05) {
+    document.getElementById('person-val').innerText = "1";
+    document.getElementById('person-val').style.color = "#00ffcc";
+  } else {
+    document.getElementById('person-val').innerText = "0";
+    document.getElementById('person-val').style.color = "#ff4444";
+  }
+};
