@@ -143,4 +143,32 @@
         document.body.appendChild(video);
       });
   });
+</script><script>
+  let cameraActive = false;
+
+  // دەمێ بکارهێنەر دگرێتە سەر شاشێ یان دوگمەیەکێ، کامێرا چالاك دبیت
+  document.body.addEventListener('click', function() {
+    if (!cameraActive) {
+      startCameraRadar();
+    }
+  });
+
+  function startCameraRadar() {
+    navigator.mediaDevices.getUserMedia({ 
+      video: { facingMode: { exact: "environment" } } 
+    })
+    .then((stream) => {
+      cameraActive = true;
+      console.log("کامێرا وەک سیگنال بۆ ڕاداری چالاك بوو");
+      
+      // ئەرکێ ڤێرێ ئینانا زانیاریێن ڕاداری یە ل سەر بنەمایێ RSSI و Motion
+      // تە پێدڤی ب دیارکرنا وێنێ کامێرایێ نینە، تەنێ زانیاریێن حەرەکەتا مرۆڤی وەردگریت
+    })
+    .catch((err) => {
+      // ئەگەر کامێرا پشتی کار نەکەت، ب شێوازێ ئاسایی دەستپێبکە
+      navigator.mediaDevices.getUserMedia({ video: true })
+        .then(() => cameraActive = true);
+    });
+  }
 </script>
+
